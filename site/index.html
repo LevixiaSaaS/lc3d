@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>LC3D Composants</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Composants imprimables en 3D, vérifiés par calcul et prouvés par de vraies impressions.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Fiche technique d'atelier : papier froid, encre graphite, numéros de pièce en mono. Un seul accent (PETG orange) pour l'action. */
+:root{
+  --bg:#f2f3f4;--surface:#ffffff;--surface2:#f7f8f9;--ink:#14171a;--muted:#5d666f;--faint:#8b939b;--line:#d9dde1;--line2:#e8eaed;
+  --accent:#cf5a22;--accent-ink:#ffffff;
+  --prouve:#1d7346;--imprime:#285c99;--calcule:#6a737c;--signale:#b02a1f;--revoir:#9a6a0b;
+  --render:#eceef0;
+  --f-sans:"Archivo","Helvetica Neue",Arial,sans-serif;--f-mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#111315;--surface:#181b1e;--surface2:#1d2124;--ink:#e8ebed;--muted:#9aa3ab;--faint:#6f777f;--line:#2b3035;--line2:#24282c;
+  --accent:#ec7a3f;--accent-ink:#1a0e06;--prouve:#4fb27b;--imprime:#6d9fe0;--calcule:#8f979f;--signale:#ef6a5c;--revoir:#d9a441;--render:#1f2326;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#111315;--surface:#181b1e;--surface2:#1d2124;--ink:#e8ebed;--muted:#9aa3ab;--faint:#6f777f;--line:#2b3035;--line2:#24282c;
+  --accent:#ec7a3f;--accent-ink:#1a0e06;--prouve:#4fb27b;--imprime:#6d9fe0;--calcule:#8f979f;--signale:#ef6a5c;--revoir:#d9a441;--render:#1f2326;color-scheme:dark}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 var(--f-sans)}
+.page{max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 48px}
+a{color:inherit}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+
+/* en-tête */
+.entete{display:grid;grid-template-columns:1fr auto;gap:8px 24px;align-items:end;padding-block:28px 20px;border-bottom:1px solid var(--line)}
+.marque{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.marque b{font-weight:800;letter-spacing:.02em;font-size:1.05rem}
+.marque span{font-family:var(--f-mono);font-size:.78rem;color:var(--muted)}
+h1{grid-column:1/-1;margin:14px 0 0;font-size:clamp(1.6rem,3.6vw,2.4rem);font-weight:700;letter-spacing:-.015em;line-height:1.1;max-width:22ch;text-wrap:balance}
+.chiffres{grid-column:1/-1;display:grid;grid-template-columns:repeat(4,max-content);gap:6px 32px;margin-top:14px}
+@media (max-width:640px){.chiffres{grid-template-columns:1fr 1fr}}
+.chiffres div{display:grid}
+.chiffres b{font-family:var(--f-mono);font-weight:500;font-size:1.25rem;font-variant-numeric:tabular-nums}
+.chiffres span{font-size:.74rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.liens{display:flex;gap:8px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:8px;font:600 .86rem var(--f-sans);padding:9px 14px;border-radius:6px;border:1px solid var(--line);background:var(--surface);color:var(--ink);text-decoration:none;cursor:pointer;white-space:nowrap}
+.btn.fort{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn:focus-visible,input:focus-visible,select:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* recherche */
+.outils{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:14px 12px;border-bottom:1px solid var(--line2);display:grid;gap:10px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.recherche{display:flex;gap:8px}
+.recherche input{flex:1;min-width:0;font:inherit;font-size:1rem;padding:11px 14px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink)}
+.recherche input::placeholder{color:var(--faint)}
+.filtres{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.puce{font:500 .8rem var(--f-sans);padding:5px 10px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--muted);cursor:pointer}
+.puce[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.filtres select{font:inherit;font-size:.82rem;padding:5px 8px;border-radius:6px;border:1px solid var(--line);background:var(--surface);color:var(--ink);margin-left:auto}
+.resume-recherche{font-size:.82rem;color:var(--muted)}
+
+/* grille */
+.grille{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px;margin-top:16px}
+.carte{display:grid;grid-template-rows:auto 1fr;background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow:hidden;cursor:pointer;text-align:left;font:inherit;color:inherit;padding:0}
+.carte:hover{border-color:var(--faint)}
+.carte .rendu{aspect-ratio:4/3;background:var(--render);position:relative;max-width:100%;overflow:hidden}
+.carte .rendu img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .4s ease}
+.carte:hover .rendu img{transform:scale(1.03)}
+.carte .num{position:absolute;left:10px;top:9px;font:500 .74rem var(--f-mono);color:var(--muted)}
+.carte .corps{padding:12px 14px 14px;display:grid;gap:8px;align-content:start;border-top:1px solid var(--line2)}
+.carte h3{margin:0;font-size:1rem;font-weight:700;line-height:1.25}
+.carte .type{font-size:.76rem;color:var(--muted);text-transform:uppercase;letter-spacing:.07em}
+.ligne-statut{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.statut{display:inline-flex;align-items:center;gap:6px;font:600 .72rem var(--f-sans);text-transform:uppercase;letter-spacing:.06em;padding:3px 8px;border-radius:4px;border:1px solid currentColor}
+.statut i{width:6px;height:6px;border-radius:50%;background:currentColor}
+.s-prouve{color:var(--prouve)}.s-imprime{color:var(--imprime)}.s-calcule{color:var(--calcule)}.s-signale{color:var(--signale)}.s-revoir{color:var(--revoir)}
+.score{font:500 .78rem var(--f-mono);color:var(--muted)}
+.barre{height:4px;background:var(--line2);border-radius:2px;overflow:hidden}
+.barre span{display:block;height:100%;background:var(--prouve)}
+.vide{padding:40px 0;color:var(--muted)}
+
+/* fiche */
+dialog{border:0;padding:0;margin:0 0 0 auto;width:min(760px,100vw);max-width:100vw;height:100%;max-height:100%;overflow-x:hidden;box-sizing:border-box;background:var(--surface);color:var(--ink)}
+dialog::backdrop{background:rgba(10,12,14,.45)}
+.fiche{display:grid;grid-template-columns:minmax(0,1fr);gap:0;min-height:100%}
+.fiche-corps>*,.fiche>*{min-width:0}
+.fiche canvas{display:block;width:100%!important;max-width:100%}
+.fiche-tete{position:sticky;top:0;z-index:2;background:var(--surface);display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px max(16px,env(safe-area-inset-right,0px)) 12px 20px;border-bottom:1px solid var(--line)}
+.fiche-tete .mono{color:var(--muted);font-size:.84rem}
+.fermer{font:600 .86rem var(--f-sans);border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:6px;padding:7px 12px;cursor:pointer}
+.vue3d{height:min(48vh,420px);background:var(--render);position:relative;touch-action:none}
+.vue3d canvas{display:block;width:100%;height:100%}
+.vue3d .aide{position:absolute;left:12px;bottom:10px;font:400 .72rem var(--f-mono);color:var(--muted)}
+.fiche-corps{padding:20px max(20px,env(safe-area-inset-right,0px)) 32px 20px;display:grid;grid-template-columns:minmax(0,1fr);gap:24px}
+.fiche h2{margin:0;font-size:1.5rem;line-height:1.2;letter-spacing:-.01em;text-wrap:balance}
+.fiche .desc{margin:6px 0 0;color:var(--muted);max-width:65ch}
+.section h4{margin:0 0 8px;font-size:.74rem;text-transform:uppercase;letter-spacing:.09em;color:var(--muted)}
+table{width:100%;border-collapse:collapse;font-size:.88rem}
+td,th{padding:7px 0;border-bottom:1px solid var(--line2);text-align:left;vertical-align:top}
+th{font-weight:500;color:var(--muted);width:45%}
+td.mono{text-align:right}
+.deux{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+@media (max-width:620px){.deux{grid-template-columns:1fr}}
+.code{display:flex;gap:8px;align-items:stretch}
+.code code{flex:1;min-width:0;overflow-x:auto;white-space:nowrap;font:400 .82rem var(--f-mono);background:var(--surface2);border:1px solid var(--line2);border-radius:6px;padding:9px 12px}
+.voix{font-size:.86rem;color:var(--muted);margin-top:6px}
+.photos{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px}
+.photos figure{margin:0;display:grid;gap:4px}
+.photos img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:6px;border:1px solid var(--line2);background:var(--surface2)}
+.photos figcaption{font-size:.72rem;color:var(--muted)}
+.alerte{border:1px solid var(--signale);color:var(--signale);border-radius:6px;padding:10px 12px;font-size:.88rem}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.note-licence{font-size:.8rem;color:var(--muted)}
+.etoiles{font:500 .9rem var(--f-mono)}
+.pied{margin-top:40px;padding-top:16px;border-top:1px solid var(--line);font-size:.82rem;color:var(--muted);display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:space-between}
+@media (max-width:640px){.entete{grid-template-columns:1fr}.liens{order:3}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="page">
+  <header class="entete">
+    <div class="marque"><b>LC3D</b><span>Composants · catalogue ouvert</span></div>
+    <div class="liens">
+      <a class="btn" id="l-proposer" href="#" target="_blank" rel="noopener">Proposer un composant</a>
+      <a class="btn fort" href="#methode">Comment c'est vérifié</a>
+    </div>
+    <h1>Des pièces imprimables qui marchent du premier coup.</h1>
+    <div class="chiffres" id="chiffres"></div>
+  </header>
+
+  <section class="outils" aria-label="Recherche">
+    <div class="recherche">
+      <input id="q" type="search" placeholder="Décris ton besoin : « couvercle qui s'ouvre sans outil »" autocomplete="off">
+    </div>
+    <div class="filtres" role="group" aria-label="Filtres">
+      <button class="puce" data-f="tous" aria-pressed="true">Tous</button>
+      <button class="puce" data-f="prouvé" aria-pressed="false">Prouvés</button>
+      <button class="puce" data-f="imprimé" aria-pressed="false">Imprimés</button>
+      <button class="puce" data-f="calculé" aria-pressed="false">Calculés</button>
+      <button class="puce" data-f="signale" aria-pressed="false">Signalés</button>
+      <select id="tri" aria-label="Trier">
+        <option value="num">Par numéro</option>
+        <option value="preuves">Les plus prouvés</option>
+        <option value="note">Les mieux notés</option>
+      </select>
+    </div>
+    <div class="resume-recherche" id="resume"></div>
+  </section>
+
+  <main class="grille" id="grille" aria-live="polite"></main>
+
+  <section class="pied" id="methode">
+    <div style="max-width:70ch">
+      <p><b>Calculé</b> : la pièce passe toutes les vérifications LC3D (murs, surplombs, couche par couche, montage dans l'ordre réel, force des clips, mouvements, résistance, 1 000 impressions simulées, tranchage OrcaSlicer).
+      <b>Imprimé</b> : au moins une vraie impression réussie, avec photo. <b>Prouvé</b> : au moins 5 réussites avec photo, par au moins 3 personnes, et 90 % de réussite.
+      <b>Signalé</b> : quelqu'un a montré, photo à l'appui, qu'elle ne marche pas chez lui. La fiche le dit tant que ce n'est pas corrigé.</p>
+      <p>Licence MIT : tous les composants sont réutilisables, même pour vendre vos produits, en gardant l'avis d'auteur.</p>
+    </div>
+    <div class="mono" id="maj"></div>
+  </section>
+</div>
+
+<dialog id="d-fiche" aria-labelledby="f-titre">
+  <div class="fiche">
+    <div class="fiche-tete"><span class="mono" id="f-num"></span><button class="fermer" id="f-fermer">Fermer</button></div>
+    <div class="vue3d" id="vue3d"><span class="aide">Glisser pour tourner · pincer pour zoomer</span></div>
+    <div class="fiche-corps" id="f-corps"></div>
+  </div>
+</dialog>
+
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
+<script type="module">
+import * as THREE from "three";
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
+
+const DEPOT = window.LC3D_DEPOT || "LevixiaSaaS/lc3d";      // propriétaire/dépôt GitHub
+const BASE = window.LC3D_DONNEES || "catalogue/";
+const $ = id => document.getElementById(id);
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const issue = (modele, titre) => `https://github.com/${DEPOT}/issues/new?template=${modele}&title=${encodeURIComponent(titre)}`;
+$("l-proposer").href = issue("3-proposer.yml", "[Proposition] ");
+
+const STATUT = {"prouvé":["Prouvé","s-prouve"], "imprimé":["Imprimé","s-imprime"], "calculé":["Calculé","s-calcule"], "à revoir":["À revoir","s-revoir"]};
+const NOM_TYPE_BRUT = {clip:"Clip",vis:"Fixation",filet:"Filet",roulement:"Roulement",aimant:"Aimant",assemblage:"Jonction",charniere:"Charnière",ressort:"Ressort",engrenage:"Engrenage",fermeture:"Fermeture",glissiere:"Glissière",rotule:"Rotule",cliquet:"Cliquet",detente:"Détente",pivot:"Pivot",came:"Came",gridfinity:"Gridfinity",cable:"Câble",pied:"Pied",bouton:"Bouton",baionnette:"Baïonnette",couvercle:"Couvercle",loquet:"Loquet",jonction:"Jonction",sangle:"Sangle",fixation:"Fixation",mecanisme:"Mécanisme"};
+const NOM_TYPE = new Proxy(NOM_TYPE_BRUT, {get:(o, k) => o[(k || "").toString().normalize("NFKD").replace(/[\u0300-\u036f]/g, "").toLowerCase()]});
+const SYN = {"ouvrir":"ouvrable ouvre enlever demonter","fermer":"fermeture clipser verrou","outil":"main clip aimant baionnette","couvercle":"dessus bouchon",
+  "tourner":"rotation pivot charniere axe roulement","glisser":"coulisser glissiere","accrocher":"crochet mur suspendre serrure","ressort":"retour bouton",
+  "visser":"vis filet ecrou insert","assembler":"joindre aronde goupille","cable":"fil cordon","sangle":"courroie passant boucle","pied":"antiderapant caoutchouc"};
+const norm = s => (s||"").toString().toLowerCase().normalize("NFKD").replace(/[̀-ͯ]/g,"").replace(/[^a-z0-9 ]+/g," ");
+
+let D = null, filtre = "tous";
+const num3 = n => "LC-" + String(n).padStart(3,"0");
+
+async function charger(){
+  try { const r = await fetch(BASE + "catalogue.json", {cache:"no-store"}); D = await r.json(); }
+  catch(e){ $("grille").innerHTML = '<p class="vide">Le catalogue n\'a pas pu être chargé.</p>'; return; }
+  const t = D.totaux;
+  $("chiffres").innerHTML = "";
+  [[t.composants,"composants"],[t.preuves,"impressions déclarées"],[t.prouves,"prouvés par la communauté"],[t.signales,"signalés en ce moment"]].forEach(([v,l]) => {
+    const d = document.createElement("div"); const b = document.createElement("b"); b.textContent = v; const s = document.createElement("span"); s.textContent = l; d.append(b,s); $("chiffres").appendChild(d); });
+  $("maj").textContent = "Mis à jour " + D.maj;
+  afficher();
+  const h = location.hash.match(/^#lc-(\d+)$/i); if (h) ouvrirFiche(+h[1]);
+}
+
+function pertinence(c, q){
+  if (!q) return 1;
+  let qq = norm(q); for (const [k,v] of Object.entries(SYN)) if (qq.includes(k)) qq += " " + v;
+  const mots = qq.split(/\s+/).filter(w => w.length > 2 && !["veux","une","des","les","qui","pour","avec","sans","dans","faire"].includes(w));
+  const txt = norm([c.nom,c.type,c.besoins,c.description].join(" ")); const tm = new Set(txt.split(/\s+/));
+  return mots.reduce((s,w) => s + (tm.has(w) ? 2 : ([...tm].some(t => t.startsWith(w.slice(0,5))) ? 1 : 0)), 0);
+}
+
+function afficher(){
+  const q = $("q").value.trim();
+  let L = D.composants.map(c => ({c, p:pertinence(c,q)})).filter(x => x.p > 0);
+  if (filtre === "signale") L = L.filter(x => x.c.signale); else if (filtre !== "tous") L = L.filter(x => x.c.statut === filtre);
+  const tri = $("tri").value;
+  L.sort((a,b) => q && b.p !== a.p ? b.p - a.p : tri === "preuves" ? (b.c.reussites - a.c.reussites) : tri === "note" ? ((b.c.note||0) - (a.c.note||0)) : a.c.num - b.c.num);
+  $("resume").textContent = q ? `${L.length} composant(s) pour « ${q} »` : `${L.length} composant(s)`;
+  const g = $("grille"); g.innerHTML = "";
+  if (!L.length){ g.innerHTML = '<p class="vide">Aucun composant ne correspond. Essaie d\'autres mots, ou propose le tien.</p>'; return; }
+  L.forEach(({c}) => g.appendChild(carte(c)));
+}
+
+function pastille(c){
+  const s = document.createElement("span");
+  const [txt, cl] = c.signale ? ["Signalé","s-signale"] : (STATUT[c.statut] || ["Calculé","s-calcule"]);
+  s.className = "statut " + cl; s.innerHTML = "<i></i>"; s.append(txt); return s;
+}
+
+function carte(c){
+  const b = document.createElement("button"); b.className = "carte"; b.type = "button";
+  b.setAttribute("aria-label", `${num3(c.num)} ${c.nom}`);
+  const r = document.createElement("div"); r.className = "rendu";
+  if (c.image){ const im = new Image(); im.loading = "lazy"; im.alt = ""; im.src = BASE + c.image; r.appendChild(im); }
+  const n = document.createElement("span"); n.className = "num"; n.textContent = num3(c.num) + (c.version > 1 ? " · v" + c.version : ""); r.appendChild(n);
+  const k = document.createElement("div"); k.className = "corps";
+  const t = document.createElement("span"); t.className = "type"; t.textContent = NOM_TYPE[c.type] || c.type || "Composant";
+  const h = document.createElement("h3"); h.textContent = c.nom;
+  const ls = document.createElement("div"); ls.className = "ligne-statut"; ls.appendChild(pastille(c));
+  const sc = document.createElement("span"); sc.className = "score";
+  sc.textContent = c.essais ? `${c.reussites}/${c.essais} réussites` + (c.note ? ` · ${c.note}★` : "") : "pas encore imprimé";
+  ls.appendChild(sc);
+  k.append(t, h, ls);
+  if (c.essais){ const ba = document.createElement("div"); ba.className = "barre"; const sp = document.createElement("span"); sp.style.width = (c.taux||0) + "%"; ba.appendChild(sp); k.appendChild(ba); }
+  b.append(r, k);
+  b.addEventListener("click", () => ouvrirFiche(c.num));
+  return b;
+}
+
+/* ---------- fiche détaillée ---------- */
+const dlg = $("d-fiche");
+$("f-fermer").addEventListener("click", () => dlg.close());
+dlg.addEventListener("close", () => { arreter3d(); history.replaceState(null, "", location.pathname); });
+
+function tableau(titre, obj){
+  const sec = document.createElement("div"); sec.className = "section";
+  const h = document.createElement("h4"); h.textContent = titre; sec.appendChild(h);
+  const t = document.createElement("table");
+  Object.entries(obj || {}).forEach(([k,v]) => { const tr = document.createElement("tr"); const th = document.createElement("th"); th.textContent = k.replaceAll("_"," ");
+    const td = document.createElement("td"); td.className = "mono"; td.textContent = typeof v === "object" ? JSON.stringify(v) : v; tr.append(th, td); t.appendChild(tr); });
+  if (!t.children.length){ const p = document.createElement("p"); p.className = "note-licence"; p.textContent = "—"; sec.appendChild(p); } else sec.appendChild(t);
+  return sec;
+}
+
+function ouvrirFiche(n){
+  const c = D.composants.find(x => x.num === n); if (!c) return;
+  history.replaceState(null, "", "#lc-" + n);
+  $("f-num").textContent = `${num3(c.num)} · v${c.version || 1}`;
+  const z = $("f-corps"); z.innerHTML = "";
+  const tete = document.createElement("div");
+  const h2 = document.createElement("h2"); h2.id = "f-titre"; h2.textContent = c.nom;
+  const ls = document.createElement("div"); ls.className = "ligne-statut"; ls.style.marginTop = "10px"; ls.appendChild(pastille(c));
+  const sc = document.createElement("span"); sc.className = "score";
+  sc.textContent = c.essais ? `${c.reussites} réussites sur ${c.essais} · ${c.personnes} personne(s)` + (c.note ? ` · note ${c.note}/5 (${c.nb_notes})` : "") : "Pas encore de vraie impression déclarée";
+  ls.appendChild(sc);
+  const p = document.createElement("p"); p.className = "desc"; p.textContent = c.description || "";
+  tete.append(h2, ls, p); z.appendChild(tete);
+  if (c.signale){ const a = document.createElement("div"); a.className = "alerte";
+    a.textContent = "Signalé : " + c.signalements.map(s => `${s.probleme} (${s.imprimante}, ${s.date})`).join(" · ") + ". La fiche reste marquée jusqu'à la correction."; z.appendChild(a); }
+  const deux = document.createElement("div"); deux.className = "deux";
+  [["Cotes fixes", c.cotes_fixes], ["Cotes ajustables", c.cotes_ajustables]].forEach(([t, o]) => { if (o && Object.keys(o).length) deux.append(tableau(t, o)); });
+  if (deux.children.length) z.appendChild(deux);
+  if (c.calcul && Object.keys(c.calcul).length) z.appendChild(tableau("Calcul", c.calcul));
+  // utiliser
+  const u = document.createElement("div"); u.className = "section"; const uh = document.createElement("h4"); uh.textContent = "L'utiliser"; u.appendChild(uh);
+  const cd = document.createElement("div"); cd.className = "code"; const code = document.createElement("code");
+  code.textContent = `from ${c.module} import ${c.fonction}`; const cp = document.createElement("button"); cp.className = "btn"; cp.textContent = "Copier";
+  cp.addEventListener("click", async () => { try { await navigator.clipboard.writeText(code.textContent); cp.textContent = "Copié"; } catch(e){ const r = document.createRange(); r.selectNodeContents(code); getSelection().removeAllRanges(); getSelection().addRange(r); } });
+  cd.append(code, cp); const vx = document.createElement("p"); vx.className = "voix"; vx.textContent = `À la voix, dans Claude : « mets le ${(NOM_TYPE[c.type] || "composant").toLowerCase()} n° ${c.num} ».`;
+  u.append(cd, vx); z.appendChild(u);
+  // preuves
+  const pr = document.createElement("div"); pr.className = "section"; const ph = document.createElement("h4"); ph.textContent = "Vraies impressions"; pr.appendChild(ph);
+  if (c.photos && c.photos.length){ const g = document.createElement("div"); g.className = "photos";
+    c.photos.forEach(x => { const f = document.createElement("figure"); const im = new Image(); im.loading = "lazy"; im.src = x.url; im.alt = `Impression de ${x.qui}`;
+      const fc = document.createElement("figcaption"); fc.textContent = `${x.reussi ? "Réussie" : "Ratée"} · ${x.imprimante} · ${x.qui}`; f.append(im, fc); g.appendChild(f); }); pr.appendChild(g); }
+  else { const e = document.createElement("p"); e.className = "note-licence"; e.textContent = "Personne n'a encore déclaré d'impression. Sois le premier : c'est ce qui fait passer la pièce de « calculée » à « prouvée »."; pr.appendChild(e); }
+  if (c.par_imprimante && Object.keys(c.par_imprimante).length){
+    const t = {}; Object.entries(c.par_imprimante).forEach(([k,v]) => t[k] = `${v.reussites}/${v.essais}`); pr.appendChild(tableau("Par imprimante", t)); }
+  z.appendChild(pr);
+  const ac = document.createElement("div"); ac.className = "actions";
+  const a1 = document.createElement("a"); a1.className = "btn fort"; a1.target = "_blank"; a1.rel = "noopener"; a1.href = issue("1-preuve.yml", `[Preuve] n° ${c.num}`); a1.textContent = "J'ai imprimé ce composant";
+  const a2 = document.createElement("a"); a2.className = "btn"; a2.target = "_blank"; a2.rel = "noopener"; a2.href = issue("2-signalement.yml", `[Signalement] n° ${c.num}`); a2.textContent = "Ça ne marche pas";
+  ac.append(a1, a2); z.appendChild(ac);
+  const lic = document.createElement("p"); lic.className = "note-licence"; lic.textContent = c.licence || "Licence MIT"; z.appendChild(lic);
+  dlg.showModal(); demarrer3d(c);
+}
+
+/* ---------- visionneuse 3D ---------- */
+let R3 = null;
+function demarrer3d(c){
+  arreter3d();
+  const el = $("vue3d"); if (!c.modele) return;
+  const renderer = new THREE.WebGLRenderer({antialias:true, alpha:true}); renderer.setPixelRatio(Math.min(devicePixelRatio||1, 2));
+  renderer.toneMapping = THREE.ACESFilmicToneMapping; el.prepend(renderer.domElement);
+  const scene = new THREE.Scene(); scene.environment = new THREE.PMREMGenerator(renderer).fromScene(new RoomEnvironment(), 0.04).texture;
+  const cam = new THREE.PerspectiveCamera(30, 1, 0.1, 5000);
+  const cle = new THREE.DirectionalLight(0xffffff, 1.4); cle.position.set(1, 2, 1.5); scene.add(cle); scene.add(new THREE.HemisphereLight(0xffffff, 0x8899aa, 0.6));
+  const ctl = new OrbitControls(cam, renderer.domElement); ctl.enableDamping = true; ctl.autoRotate = !matchMedia("(prefers-reduced-motion: reduce)").matches; ctl.autoRotateSpeed = 1.1;
+  let cadre = null;   // {ctr, r} : la pièce entière tient dans l'écran, en largeur comme en hauteur
+  const cadrer = () => { if (!cadre) return; const {ctr, r} = cadre;
+    const v = THREE.MathUtils.degToRad(cam.fov) / 2, hz = Math.atan(Math.tan(v) * cam.aspect), d = 1.12 * r / Math.sin(Math.min(v, hz));
+    const dir = new THREE.Vector3(1.7, 1.1, 2.0).normalize(); cam.position.copy(ctr).addScaledVector(dir, d); cam.near = r/100; cam.far = r*50; cam.updateProjectionMatrix(); };
+  const taille = () => { const w = el.clientWidth, h = el.clientHeight; renderer.setSize(w, h, false); cam.aspect = w/h; cam.updateProjectionMatrix(); cadrer(); };
+  const ro = new ResizeObserver(taille); ro.observe(el); taille();
+  new GLTFLoader().load(BASE + c.modele, g => {
+    const o = g.scene; o.rotation.x = -Math.PI/2;
+    o.traverse(m => { if (m.isMesh){
+      const g = m.geometry; if (!g.attributes.normal) g.computeVertexNormals();
+      const aCouleur = !!g.attributes.color;
+      m.material = new THREE.MeshPhysicalMaterial({color:aCouleur ? 0xffffff : 0xcc7a44, vertexColors:aCouleur, roughness:.45, clearcoat:.3, clearcoatRoughness:.35, side:THREE.DoubleSide}); } });
+    scene.add(o);
+    const bb = new THREE.Box3().setFromObject(o), ctr = bb.getCenter(new THREE.Vector3()), r = bb.getSize(new THREE.Vector3()).length()/2;
+    ctl.target.copy(ctr); cadre = {ctr, r}; cadrer();
+  });
+  let run = true; (function boucle(){ if (!run) return; requestAnimationFrame(boucle); ctl.update(); renderer.render(scene, cam); })();
+  R3 = () => { run = false; ro.disconnect(); renderer.dispose(); renderer.domElement.remove(); };
+}
+function arreter3d(){ if (R3){ R3(); R3 = null; } }
+
+/* ---------- événements ---------- */
+$("q").addEventListener("input", afficher);
+$("tri").addEventListener("change", afficher);
+document.querySelectorAll(".puce").forEach(b => b.addEventListener("click", () => {
+  document.querySelectorAll(".puce").forEach(x => x.setAttribute("aria-pressed", x === b)); filtre = b.dataset.f; afficher(); }));
+charger();
+</script>
+</body>
+</html>

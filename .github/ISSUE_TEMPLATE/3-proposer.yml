@@ -1,0 +1,37 @@
+name: "Proposer un composant"
+description: "Ajoute ta pièce au catalogue. Le robot LC3D la vérifie avant qu'elle entre."
+title: "[Proposition] "
+labels: ["proposition"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Le plus rapide : un fichier `composant.py` (CadQuery, avec `PARAMS`, `build`, `assembly`) dans une Pull Request sous `composants_proposes/<nom>/`. Le robot lance toutes les vérifications LC3D et répond dans la PR.
+        Ici, tu peux aussi joindre un STEP ou un STL : un mainteneur le convertira.
+  - type: input
+    id: nom
+    attributes:
+      label: Nom simple
+      placeholder: "Charnière clipsée 3 mm"
+    validations:
+      required: true
+  - type: textarea
+    id: besoin
+    attributes:
+      label: À quoi ça sert (le besoin)
+      placeholder: "Fermer un couvercle sans outil, démontable"
+    validations:
+      required: true
+  - type: textarea
+    id: fichier
+    attributes:
+      label: Fichier (STEP, STL ou composant.py) et photo si déjà imprimé
+    validations:
+      required: true
+  - type: dropdown
+    id: licence
+    attributes:
+      label: Licence
+      options: ["J'accepte la licence MIT : tout le monde peut réutiliser ce composant, même pour vendre"]
+    validations:
+      required: true

@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+sortie*/
+*.err
+tests/cao/aleatoire.log
+tests/cao/t_suite.log
+.DS_Store
+
+projets/

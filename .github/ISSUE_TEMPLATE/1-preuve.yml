@@ -1,0 +1,63 @@
+name: "J'ai imprimé un composant"
+description: "Déclare une vraie impression (réussie ou ratée). Photo obligatoire."
+title: "[Preuve] n° "
+labels: ["preuve"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Merci ! Chaque impression déclarée rend le catalogue plus fiable pour tout le monde.
+        Une **photo de la pièce imprimée** est obligatoire : sans photo, la preuve n'est pas comptée.
+  - type: input
+    id: numero
+    attributes:
+      label: Numéro du composant
+      description: "Ex. 1 pour « Clip n° 1 »"
+      placeholder: "1"
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      placeholder: "1"
+  - type: dropdown
+    id: resultat
+    attributes:
+      label: Résultat
+      options: ["Réussi du premier coup", "Réussi après ajustement", "Raté"]
+    validations:
+      required: true
+  - type: input
+    id: imprimante
+    attributes:
+      label: Imprimante
+      placeholder: "Bambu Lab P2S"
+    validations:
+      required: true
+  - type: input
+    id: filament
+    attributes:
+      label: Filament (matière et marque)
+      placeholder: "PETG HF, Bambu"
+    validations:
+      required: true
+  - type: dropdown
+    id: note
+    attributes:
+      label: Ta note
+      options: ["5 — parfait", "4 — très bien", "3 — correct", "2 — décevant", "1 — à éviter"]
+    validations:
+      required: true
+  - type: textarea
+    id: photo
+    attributes:
+      label: Photo de la pièce imprimée
+      description: "Glisse ta photo ici (obligatoire)."
+    validations:
+      required: true
+  - type: textarea
+    id: commentaire
+    attributes:
+      label: Commentaire (facultatif)
+      description: "Ce qui a bien marché, ce que tu as changé (jeu, filament, réglage)."

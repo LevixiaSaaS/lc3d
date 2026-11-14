@@ -1,0 +1,43 @@
+name: "Ça ne marche pas"
+description: "Signale un composant qui ne fonctionne pas. Il sera marqué tout de suite dans le catalogue."
+title: "[Signalement] n° "
+labels: ["signalement"]
+body:
+  - type: input
+    id: numero
+    attributes:
+      label: Numéro du composant
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      placeholder: "1"
+  - type: dropdown
+    id: probleme
+    attributes:
+      label: Le problème
+      options: ["Ne s'assemble pas", "Trop serré", "Trop lâche", "Casse", "Ne s'imprime pas bien", "Autre"]
+    validations:
+      required: true
+  - type: input
+    id: imprimante
+    attributes:
+      label: Imprimante et filament
+      placeholder: "Bambu Lab P2S, PETG"
+    validations:
+      required: true
+  - type: textarea
+    id: photo
+    attributes:
+      label: Photo du problème
+      description: "Glisse ta photo ici (obligatoire)."
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: Ce qui s'est passé
+    validations:
+      required: true

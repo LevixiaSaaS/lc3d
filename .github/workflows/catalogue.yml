@@ -1,0 +1,67 @@
+name: Catalogue LC3D
+on:
+  issues:
+    types: [opened, edited, closed, reopened, labeled]
+  pull_request:
+    paths: ["composants_proposes/**"]
+  push:
+    branches: [main]
+    paths: ["catalogue/fiches.json", "site/**"]
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+  pages: write
+  id-token: write
+
+jobs:
+  contribution:
+    if: github.event_name == 'issues' && (contains(github.event.issue.labels.*.name, 'preuve') || contains(github.event.issue.labels.*.name, 'signalement'))
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: Traiter la contribution
+        run: python scripts/robot_catalogue.py traiter "$GITHUB_EVENT_PATH" || true
+      - name: Répondre dans l'issue
+        env: { GH_TOKEN: "${{ github.token }}" }
+        run: gh issue comment ${{ github.event.issue.number }} --body-file reponse.md
+      - name: Enregistrer
+        run: |
+          git config user.name "robot-lc3d"; git config user.email "robot-lc3d@users.noreply.github.com"
+          git add catalogue/*.json && git commit -m "Catalogue : contribution #${{ github.event.issue.number }}" && git push || echo "rien à enregistrer"
+
+  verifier-proposition:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: Installer LC3D
+        run: pip install -q -r requirements.txt
+      - name: Vérifier chaque composant proposé
+        run: |
+          echo "## Vérification LC3D" > verdict.md
+          for f in $(git diff --name-only origin/${{ github.base_ref }}... | grep '^composants_proposes/.*\.py$'); do
+            echo "### $f" >> verdict.md
+            python lc3d/lc3d.py run "$f" --out "sortie/$(dirname $f)" --sans-tranchage > r.json 2>&1 || true
+            python -c "import json;d=json.load(open('r.json'));print('Verdict :', d.get('verdict')); [print('-', r.get('statut'), r.get('verif'), ':', r.get('detail')) for r in d.get('a_corriger', [])]" >> verdict.md || echo "Le modèle ne s'exécute pas." >> verdict.md
+          done
+      - name: Répondre dans la PR
+        env: { GH_TOKEN: "${{ github.token }}" }
+        run: gh pr comment ${{ github.event.pull_request.number }} --body-file verdict.md
+
+  site:
+    if: github.event_name == 'push' || (github.event_name == 'issues')
+    needs: []
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { ref: main }
+      - run: git pull --ff-only || true
+      - run: mkdir -p public && cp -r site/* public/ && cp -r catalogue public/catalogue
+      - uses: actions/upload-pages-artifact@v3
+        with: { path: public }
+      - uses: actions/deploy-pages@v4
